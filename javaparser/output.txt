@@ -1,0 +1,156 @@
+File: classes/child/FirstsFirstChild.java
+------------------------------------------------------------------------
+* Class:
+====================================
+classes.child.FirstsFirstChild
+====================================
+
+* Field:
+====================================
+====================================
+
+* Method:
+====================================
+public void printToConsole(String) 
+public void abstractMethod2() 
+====================================
+
+File: classes/child/FirstsSecondChild.java
+--------------------------------------------------------------------------
+* Class:
+=====================================
+classes.child.FirstsSecondChild
+=====================================
+
+* Field:
+=====================================
+=====================================
+
+* Method:
+=====================================
+public void printToConsole(String) 
+=====================================
+
+File: classes/child/FSCsChild.java
+----------------------------------------------------------
+* Class:
+=============================
+classes.child.FSCsChild
+=============================
+
+* Field:
+=============================
+=============================
+
+* Method:
+=============================
+public void abstractMethod2() 
+=============================
+
+File: classes/parent/First.java
+----------------------------------------------------
+* Class:
+==========================
+classes.parent.First
+==========================
+
+* Field:
+==========================
+protected long field1;
+protected int field2;
+protected double field3;
+==========================
+
+* Method:
+==========================
+public long getField1() 
+public int getField2() 
+public double getField3() 
+public void setField(int, int) 
+public void setField(int, double) 
+public abstract void printToConsole(String) 
+public abstract void abstractMethod2() 
+==========================
+
+File: classes/parent/Polymorphism.java
+------------------------------------------------------------------
+* Class:
+=================================
+classes.parent.Polymorphism
+=================================
+
+* Field:
+=================================
+private int counter = 0;
+=================================
+
+* Method:
+=================================
+public int getCounter() 
+public void setCounter(int) 
+public void testUpCasting() 
+public void testDownCasting() 
+=================================
+
+File: classes/parent/Second.java
+------------------------------------------------------
+* Class:
+===========================
+classes.parent.Second
+===========================
+
+* Field:
+===========================
+private int privateField1;
+public static String publicField1;
+public String field2;
+public final int PUBLIC_FIELD_3 = 100;
+===========================
+
+* Method:
+===========================
+public int getPrivateField1() 
+public void setPrivateField1(int) 
+public static String getPublicField1() 
+public static void setPublicField1(String) 
+public String getField2() 
+public void setField2(String) 
+public static void method1() 
+public boolean method2(String) 
+===========================
+
+File: interfaces/Comparable.java
+------------------------------------------------------
+* Class:
+===========================
+interfaces.Comparable
+===========================
+
+* Field:
+===========================
+===========================
+
+* Method:
+===========================
+int compareTo(T) 
+===========================
+
+File: Test.java
+--------------------
+* Class:
+==========
+Test
+==========
+
+* Field:
+==========
+private int value;
+==========
+
+* Method:
+==========
+public int compareTo(Test) 
+public static void testParameter(classes.child.FSCsChild) 
+public static void main(String[]) 
+==========
+
