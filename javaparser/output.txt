@@ -1,156 +1,239 @@
 File: classes/child/FirstsFirstChild.java
-------------------------------------------------------------------------
-* Class:
+-------------------------------------------
+
+*** Class ***
 ====================================
 classes.child.FirstsFirstChild
 ====================================
 
 * Field:
-====================================
-====================================
+====================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-====================================
-public void printToConsole(String) 
-public void abstractMethod2() 
-====================================
+====================
+public void printToConsole(String content)
+public void abstractMethod2()
+====================
 
 File: classes/child/FirstsSecondChild.java
---------------------------------------------------------------------------
-* Class:
+--------------------------------------------
+
+*** Class ***
 =====================================
 classes.child.FirstsSecondChild
 =====================================
 
 * Field:
-=====================================
-=====================================
+====================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-=====================================
-public void printToConsole(String) 
-=====================================
+====================
+public void printToConsole(String content)
+====================
 
 File: classes/child/FSCsChild.java
-----------------------------------------------------------
-* Class:
+------------------------------------
+
+*** Class ***
 =============================
 classes.child.FSCsChild
 =============================
 
 * Field:
-=============================
-=============================
+====================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-=============================
-public void abstractMethod2() 
-=============================
+====================
+public void abstractMethod2()
+====================
 
 File: classes/parent/First.java
-----------------------------------------------------
-* Class:
+---------------------------------
+
+*** Class ***
 ==========================
 classes.parent.First
 ==========================
 
 * Field:
-==========================
+====================
 protected long field1;
 protected int field2;
 protected double field3;
-==========================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-==========================
-public long getField1() 
-public int getField2() 
-public double getField3() 
-public void setField(int, int) 
-public void setField(int, double) 
-public abstract void printToConsole(String) 
-public abstract void abstractMethod2() 
-==========================
+====================
+public long getField1()
+public int getField2()
+public double getField3()
+public void setField(int field1, int field2)
+public void setField(int field2, double field3)
+public abstract void printToConsole(String content)
+public abstract void abstractMethod2()
+====================
 
 File: classes/parent/Polymorphism.java
-------------------------------------------------------------------
-* Class:
+----------------------------------------
+
+*** Class ***
 =================================
 classes.parent.Polymorphism
 =================================
 
 * Field:
-=================================
+====================
 private int counter = 0;
-=================================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-=================================
-public int getCounter() 
-public void setCounter(int) 
-public void testUpCasting() 
-public void testDownCasting() 
-=================================
+====================
+public int getCounter()
+public void setCounter(int counter)
+public void testUpCasting()
+public void testDownCasting()
+====================
 
 File: classes/parent/Second.java
-------------------------------------------------------
-* Class:
+----------------------------------
+
+*** Class ***
 ===========================
 classes.parent.Second
 ===========================
 
 * Field:
-===========================
+====================
 private int privateField1;
 public static String publicField1;
 public String field2;
 public final int PUBLIC_FIELD_3 = 100;
-===========================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-===========================
-public int getPrivateField1() 
-public void setPrivateField1(int) 
-public static String getPublicField1() 
-public static void setPublicField1(String) 
-public String getField2() 
-public void setField2(String) 
-public static void method1() 
-public boolean method2(String) 
-===========================
+====================
+public int getPrivateField1()
+public void setPrivateField1(int privateField1)
+public static String getPublicField1()
+public static void setPublicField1(String publicField1)
+public String getField2()
+public void setField2(String field2)
+public static void method1()
+public boolean method2(String param1)
+====================
+
+*** Second's nested class ***
+====================
+classes.parent.nestedClass1
+====================
+
+* Field:
+====================
+private int field1 = 0;
+private int field2 = 0;
+====================
+
+* Constructor:
+====================
+public nestedClass1(int field1, int field2)
+====================
+
+* Method:
+====================
+public void nestedMethod1()
+====================
+
+*** nestedClass1's nested class ***
+====================
+classes.parent.nestedClass2
+====================
+
+* Field:
+====================
+private int field3 = 0;
+private int field4 = 0;
+====================
+
+* Constructor:
+====================
+public nestedClass2(int field3, int field4)
+====================
+
+* Method:
+====================
+public void nestedMethod2()
+====================
 
 File: interfaces/Comparable.java
-------------------------------------------------------
-* Class:
+----------------------------------
+
+*** Interface ***
 ===========================
 interfaces.Comparable
 ===========================
 
 * Field:
-===========================
-===========================
+====================
+====================
+
+* Constructor:
+====================
+====================
 
 * Method:
-===========================
-int compareTo(T) 
-===========================
+====================
+ int compareTo(T o)
+====================
 
 File: Test.java
---------------------
-* Class:
+-----------------
+
+*** Class ***
 ==========
 Test
 ==========
 
 * Field:
-==========
+====================
 private int value;
-==========
+====================
+
+* Constructor:
+====================
+public Test(int value)
+====================
 
 * Method:
-==========
-public int compareTo(Test) 
-public static void testParameter(classes.child.FSCsChild) 
-public static void main(String[]) 
-==========
+====================
+public int compareTo(Test o)
+public static void testParameter(FSCsChild value)
+public static void main(String[] args)
+====================
 

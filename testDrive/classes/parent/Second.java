@@ -6,6 +6,34 @@ public class Second {
     public String field2;
     public final int PUBLIC_FIELD_3 = 100;
 
+    public static class nestedClass1 {
+        private int field1 = 0;
+        private int field2 = 0;
+
+        public nestedClass1(int field1, int field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
+
+        public void nestedMethod1() {
+            System.out.println("This is nestedClass's method in Second.");
+        }
+
+        public static class nestedClass2 {
+            private int field3 = 0;
+            private int field4 = 0;
+
+            public nestedClass2(int field3, int field4) {
+                this.field3 = field3;
+                this.field4 = field4;
+            }
+
+            public void nestedMethod2() {
+                System.out.println("This is nestedClass's method in Second.");
+            }
+        }
+    }
+
     public int getPrivateField1() {
         return privateField1;
     }

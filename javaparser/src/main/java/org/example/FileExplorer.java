@@ -3,10 +3,8 @@ package org.example;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.AccessSpecifier;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Strings;
 
@@ -22,7 +20,7 @@ public class FileExplorer implements Closeable {
 
     private String getFullyQualifiedName(boolean includingPackage, ClassOrInterfaceDeclaration n) {
 
-        CompilationUnit file = (CompilationUnit) n.getParentNode().get();
+        CompilationUnit file = getCompilationUnit(n);
 
         if (!includingPackage || !file.getPackageDeclaration().isPresent()) {
             return n.getNameAsString();
@@ -31,9 +29,9 @@ public class FileExplorer implements Closeable {
         return file.getPackageDeclaration().get().getName().asString() + "." + n.getNameAsString();
     }
 
-    private String getFullyQualifiedName(MethodDeclaration n, boolean includingParameterName) {
+    private String getFullyQualifiedName(boolean includingPackage, MethodDeclaration n, boolean includingParameterName) {
 
-        CompilationUnit compilationUnit = (CompilationUnit) n.getParentNode().get().getParentNode().get();
+        CompilationUnit compilationUnit = getCompilationUnit(n);
 
         StringBuilder sb = new StringBuilder();
 
@@ -62,6 +60,10 @@ public class FileExplorer implements Closeable {
         }
         sb.append(n.getType().toString());
         sb.append(" ");
+        if (includingPackage) {
+            sb.append(compilationUnit.getPackageDeclaration().get().getNameAsString());
+            sb.append(".");
+        }
         sb.append(n.getName());
         sb.append("(");
 
@@ -70,11 +72,6 @@ public class FileExplorer implements Closeable {
 
         while(var6.hasNext()) {
             Parameter param = (Parameter)var6.next();
-
-            if (param.getType().asString().equals("FSCsChild")) {
-                int debug = 1;
-            }
-            // compilationUnit.getImport(0).getName().asString()
 
             if (firstParam) {
                 firstParam = false;
@@ -115,17 +112,38 @@ public class FileExplorer implements Closeable {
         return sb.toString();
     }
 
-    private void listClasses(String path, File file) throws IOException {
-        println("* Class:");
-        println(Strings.repeat("=", path.length()));
+    private static CompilationUnit getCompilationUnit(Node n1) {
+        while (!(n1 instanceof CompilationUnit)) {
+            if(n1.getParentNode().isPresent()) {
+                n1 = n1.getParentNode().get();
+            } else return null;
+        }
+        return (CompilationUnit)n1;
+    }
 
+    private void listClasses(String path, File file) {
         try {
             new VoidVisitorAdapter<>() {
                 @Override
                 public void visit(ClassOrInterfaceDeclaration n, Object arg) {
-                    super.visit(n, arg);
                     try {
+                        if (!n.getParentNode().get().equals(StaticJavaParser.parse(file))) {
+                            return;
+                        }
+                        super.visit(n, arg);
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        String classOrInterface = (n.isInterface() ? "*** Interface ***" : "*** Class ***");
+                        println(classOrInterface);
+                        println(Strings.repeat("=", path.length()));
                         println(getFullyQualifiedName(true, n));
+                        println(Strings.repeat("=", path.length()));
+                        listFields(n);
+                        listConstructors(n);
+                        listMethods(n);
+                        exploreNestedClasses(n);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -135,85 +153,123 @@ public class FileExplorer implements Closeable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        println(Strings.repeat("=", path.length()));
     }
 
-    private void listMethods(String path, File file) throws IOException {
+    private void exploreNestedClasses(ClassOrInterfaceDeclaration parentDecl) {
+        VoidVisitorAdapter<Object> visitor = new VoidVisitorAdapter<>() {
+            @Override
+            public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+                if (!n.getParentNode().get().equals(parentDecl)) {
+                    return;
+                }
+                super.visit(n, arg);
+                try {
+                    String classOrInterface = "*** " + parentDecl.getNameAsString() + "'s ";
+                    classOrInterface += (n.isInterface() ? "nested interface" : "nested class");
+                    classOrInterface += " ***";
+                    println(classOrInterface);
+                    println(Strings.repeat("=", 20));
+                    println(getFullyQualifiedName(true, n));
+                    println(Strings.repeat("=", 20));
+                    listFields(n);
+                    listConstructors(n);
+                    listMethods(n);
+                    exploreNestedClasses(n);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        /// Method body starts here.
+        parentDecl.getMembers().forEach((p) -> {
+            if (p instanceof ClassOrInterfaceDeclaration) {
+                visitor.visit((ClassOrInterfaceDeclaration) p, null);
+            }
+        });
+    }
+
+    private void listConstructors(ClassOrInterfaceDeclaration parentDecl) throws IOException {
         println("");
+        println("* Constructor:");
+        println(Strings.repeat("=", 20));
+
+        new VoidVisitorAdapter<>() {
+            @Override
+            public void visit(ConstructorDeclaration n, Object arg) {
+                if (!n.getParentNode().get().equals(parentDecl)) {
+                    return;
+                }
+                super.visit(n, arg);
+                try {
+                    println(n.getDeclarationAsString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.visit(parentDecl, null);
+
+        println(Strings.repeat("=", 20));
+        println("");
+    }
+
+    private void listMethods(ClassOrInterfaceDeclaration parentDecl) throws IOException {
         println("* Method:");
-        println(Strings.repeat("=", path.length()));
+        println(Strings.repeat("=", 20));
 
-        try {
-            new VoidVisitorAdapter<>() {
-                @Override
-                public void visit(MethodDeclaration n, Object arg) {
-                    super.visit(n, arg);
-                    try {
-                        println(getFullyQualifiedName(n, false));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+        new VoidVisitorAdapter<>() {
+            @Override
+            public void visit(MethodDeclaration n, Object arg) {
+                if (!n.getParentNode().get().equals(parentDecl)) {
+                    return;
                 }
-            }.visit(StaticJavaParser.parse(file), null);
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        println(Strings.repeat("=", path.length()));
-        println("");
+                super.visit(n, arg);
+                try {
+                    println(n.getDeclarationAsString(true, true, true));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.visit(parentDecl, null);
+
+        println(Strings.repeat("=", 20));
         println("");
     }
 
-    private void listFields(String path, File file) throws IOException {
+    private void listFields(ClassOrInterfaceDeclaration parentDecl) throws IOException {
         println("");
         println("* Field:");
-        println(Strings.repeat("=", path.length()));
+        println(Strings.repeat("=", 20));
 
-        try {
-            new VoidVisitorAdapter<>() {
-                @Override
-                public void visit(FieldDeclaration n, Object arg) {
-                    super.visit(n, arg);
-                    try {
-                        println(String.valueOf(n.asFieldDeclaration()));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+        new VoidVisitorAdapter<>() {
+            @Override
+            public void visit(FieldDeclaration n, Object arg) {
+                if (!n.getParentNode().get().equals(parentDecl)) {
+                    return;
                 }
-            }.visit(StaticJavaParser.parse(file), null);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        println(Strings.repeat("=", path.length()));
+                super.visit(n, arg);
+                try {
+                    println(String.valueOf(n.asFieldDeclaration()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.visit(parentDecl, null);
+        println(Strings.repeat("=", 20));
     }
 
     public void explore(String path, File file) throws IOException {
-        outputWriter.write("File: " + path.substring(1));
-        println(Strings.repeat("-", path.length() * 2));
+        println("File: " + path.substring(1));
+        println(Strings.repeat("-", path.length() + 7));
+        println("");
         listClasses(path, file);
-        listFields(path, file);
-        listMethods(path, file);
     }
 
     private void println(String content) throws IOException {
-        outputWriter.write("\n");
         outputWriter.write(content);
+        outputWriter.write("\n");
     }
 
-    /**
-     * Closes this stream and releases any system resources associated
-     * with it. If the stream is already closed then invoking this
-     * method has no effect.
-     *
-     * <p> As noted in {@link AutoCloseable#close()}, cases where the
-     * close may fail require careful attention. It is strongly advised
-     * to relinquish the underlying resources and to internally
-     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
-     * the {@code IOException}.
-     *
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     public void close() throws IOException {
         outputWriter.close();
