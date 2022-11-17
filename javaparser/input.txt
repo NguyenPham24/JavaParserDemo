@@ -1,2 +1,0 @@
-D:/UNIVERSITY/lab/first/testDrive
-D:/UNIVERSITY/lab/first/javaparser/output.txt

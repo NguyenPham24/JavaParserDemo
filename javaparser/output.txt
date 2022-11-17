@@ -149,9 +149,9 @@ public static void method1()
 public boolean method2(String param1)
 ====================
 
-*** Second's nested class ***
+*** Nested class ***
 ====================
-classes.parent.nestedClass1
+Second.nestedClass1
 ====================
 
 * Field:
@@ -170,9 +170,9 @@ public nestedClass1(int field1, int field2)
 public void nestedMethod1()
 ====================
 
-*** nestedClass1's nested class ***
+*** Nested class ***
 ====================
-classes.parent.nestedClass2
+Second.nestedClass1.nestedClass2
 ====================
 
 * Field:
@@ -210,6 +210,70 @@ interfaces.Comparable
 * Method:
 ====================
  int compareTo(T o)
+====================
+
+File: Shape.java
+------------------
+
+*** Class ***
+===========
+Shape
+===========
+
+* Field:
+====================
+protected String color, hello;
+public boolean filled;
+====================
+
+* Constructor:
+====================
+====================
+
+* Method:
+====================
+public String toString()
+private void hello_shape()
+====================
+
+*** Nested class ***
+====================
+Shape.Cirle
+====================
+
+* Field:
+====================
+public int cirleVari;
+====================
+
+* Constructor:
+====================
+====================
+
+* Method:
+====================
+private void helloCirle()
+====================
+
+*** Class ***
+===========
+Hello8
+===========
+
+* Field:
+====================
+private int hello8_vari;
+====================
+
+* Constructor:
+====================
+====================
+
+* Method:
+====================
+public void setHello8_vari(int hello8_vari)
+public int getHello8_vari()
+private void hello8_me()
 ====================
 
 File: Test.java

@@ -143,7 +143,7 @@ public class FileExplorer implements Closeable {
                         listFields(n);
                         listConstructors(n);
                         listMethods(n);
-                        exploreNestedClasses(n);
+                        exploreNestedClasses(n, "");
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -155,26 +155,26 @@ public class FileExplorer implements Closeable {
         }
     }
 
-    private void exploreNestedClasses(ClassOrInterfaceDeclaration parentDecl) {
-        VoidVisitorAdapter<Object> visitor = new VoidVisitorAdapter<>() {
+    private void exploreNestedClasses(ClassOrInterfaceDeclaration parentDecl, String outerClassesName) {
+        VoidVisitorAdapter<String> visitor = new VoidVisitorAdapter<>() {
             @Override
-            public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+            public void visit(ClassOrInterfaceDeclaration n, String arg) {
                 if (!n.getParentNode().get().equals(parentDecl)) {
                     return;
                 }
                 super.visit(n, arg);
                 try {
-                    String classOrInterface = "*** " + parentDecl.getNameAsString() + "'s ";
-                    classOrInterface += (n.isInterface() ? "nested interface" : "nested class");
-                    classOrInterface += " ***";
+                    String classOrInterface = (n.isInterface() ? "*** Nested interface ***" : "*** Nested class ***");
                     println(classOrInterface);
                     println(Strings.repeat("=", 20));
-                    println(getFullyQualifiedName(true, n));
+
+                    arg += parentDecl.getNameAsString() + ".";
+                    println(arg + n.getNameAsString());
                     println(Strings.repeat("=", 20));
                     listFields(n);
                     listConstructors(n);
                     listMethods(n);
-                    exploreNestedClasses(n);
+                    exploreNestedClasses(n, arg);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -183,7 +183,7 @@ public class FileExplorer implements Closeable {
         /// Method body starts here.
         parentDecl.getMembers().forEach((p) -> {
             if (p instanceof ClassOrInterfaceDeclaration) {
-                visitor.visit((ClassOrInterfaceDeclaration) p, null);
+                visitor.visit((ClassOrInterfaceDeclaration) p, outerClassesName);
             }
         });
     }
